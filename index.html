@@ -422,7 +422,7 @@
       const team = teams[code];
       const logoCode = logoCodes[code] || code.toLowerCase();
       return "<div class=\"team-row\">" +
-        "<div class=\"team-info\"><div class=\"team-name-line\"><div class=\"team-name\">" + team.name + "</div><img class=\"team-logo\" src=\"https://a.espncdn.com/i/teamlogos/nfl/500/" + logoCode + ".png\" alt=\"" + team.name + " logo\" loading=\"lazy\"></div><span class=\"team-detail\">" + code + " · " + role + "</span></div>" +
+        "<div class=\"team-info\"><div class=\"team-name-line\"><img class=\"team-logo\" src=\"https://a.espncdn.com/i/teamlogos/nfl/500/" + logoCode + ".png\" alt=\"" + team.name + " logo\" loading=\"lazy\"><div class=\"team-name\">" + team.name + "</div></div><span class=\"team-detail\">" + code + " · " + role + "</span></div>" +
         "<div class=\"team-role\">" + role + "</div>" +
         "</div>";
     }
