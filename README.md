@@ -5,11 +5,12 @@ A small, dependency-free NFL dashboard that displays one detailed card for every
 ## What it shows
 
 - Day grouping and kickoff time
+- Stadium and stadium location
 - Away and home team rows
 - Sportsbook market line
 - Model projected line
-- Model pick, the recommended team and sportsbook spread based on the model projection
-- No score projections
+- One highlighted model pick per game
+- No score projections or team filter
 
 The current data was transcribed from the supplied model screenshot. The site is a display layer only; it does not contain or recreate the underlying prediction algorithm. The model pick favors the home spread when the model is more favorable to the home team; otherwise it selects the away spread with the sign flipped. Score projections are intentionally omitted.
 
