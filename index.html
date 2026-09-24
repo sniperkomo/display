@@ -94,21 +94,6 @@
       text-transform: uppercase;
     }
 
-    .search {
-      width: min(260px, 48%);
-      padding: 10px 12px;
-      color: var(--ink);
-      background: var(--paper);
-      border: 1px solid var(--ink);
-      border-radius: 0;
-      font: inherit;
-      outline: none;
-    }
-
-    .search:focus {
-      box-shadow: 4px 4px 0 var(--green);
-    }
-
     .day-section { margin-top: 36px; }
 
     .day-heading {
@@ -207,7 +192,7 @@
 
     .signals {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       border-bottom: 2px solid var(--rule);
     }
 
@@ -264,17 +249,6 @@
       text-align: right;
     }
 
-    .pick-callout small {
-      display: block;
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: 0.7rem;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-      text-align: right;
-      text-transform: uppercase;
-    }
-
     .site-note {
       max-width: 780px;
       margin: 36px 0 0;
@@ -293,7 +267,6 @@
       .site-shell { width: min(100% - 20px, 1120px); padding-top: 26px; }
       .site-header, .controls, .game-top, .pick-callout { align-items: flex-start; flex-direction: column; }
       .header-meta { min-width: 0; text-align: left; }
-      .search { width: 100%; }
       .game-top { gap: 6px; padding: 18px 18px; }
       .matchup { padding: 8px 18px 0; }
       .team-row { grid-template-columns: 48px minmax(0, 1fr); gap: 12px; min-height: 100px; }
@@ -303,7 +276,7 @@
       .signal { min-height: auto; border-right: 0; border-bottom: 1px solid var(--rule); }
       .signal:last-child { border-bottom: 0; }
       .pick-callout { gap: 12px; padding: 20px 18px; }
-      .pick-callout .pick, .pick-callout small { text-align: left; }
+      .pick-callout .pick { text-align: left; }
     }
   </style>
 </head>
@@ -321,12 +294,9 @@
       </div>
     </header>
 
-    <section class="controls" aria-label="Dashboard controls">
+    <section class="controls" aria-label="Dashboard summary">
       <div class="controls-copy">Market line · model line · recommended spread</div>
-      <label>
-        <span style="position:absolute;left:-10000px">Filter games</span>
-        <input class="search" id="search" type="search" placeholder="Filter by team…">
-      </label>
+      <div class="controls-copy">NFL spread model</div>
     </section>
 
     <div id="schedule"></div>
@@ -375,6 +345,24 @@
       CHI: { name: "Chicago Bears", color: "#0b162a" }
     };
 
+    const venues = {
+      GB: { stadium: "Lambeau Field", location: "Green Bay, WI" },
+      CLE: { stadium: "Huntington Bank Field", location: "Cleveland, OH" },
+      PIT: { stadium: "Acrisure Stadium", location: "Pittsburgh, PA" },
+      IND: { stadium: "Lucas Oil Stadium", location: "Indianapolis, IN" },
+      MIA: { stadium: "Hard Rock Stadium", location: "Miami Gardens, FL" },
+      BUF: { stadium: "Highmark Stadium", location: "Orchard Park, NY" },
+      JAX: { stadium: "EverBank Stadium", location: "Jacksonville, FL" },
+      DET: { stadium: "Ford Field", location: "Detroit, MI" },
+      WAS: { stadium: "Northwest Stadium", location: "Landover, MD" },
+      NYG: { stadium: "MetLife Stadium", location: "East Rutherford, NJ" },
+      SF: { stadium: "Levi's Stadium", location: "Santa Clara, CA" },
+      TB: { stadium: "Raymond James Stadium", location: "Tampa, FL" },
+      NO: { stadium: "Caesars Superdome", location: "New Orleans, LA" },
+      DEN: { stadium: "Empower Field at Mile High", location: "Denver, CO" },
+      CHI: { stadium: "Soldier Field", location: "Chicago, IL" }
+    };
+
     const games = [
       { day: "THURSDAY", kickoff: "8:15 PM ET", away: "ATL", home: "GB", line: "GB −5.5", model: "GB −6.0", lineValue: -5.5, modelValue: -6.0 },
       { day: "SUNDAY", kickoff: "1:00 PM ET", away: "CAR", home: "CLE", line: "CLE +2.5", model: "CLE +4.3", lineValue: 2.5, modelValue: 4.3 },
@@ -395,7 +383,6 @@
 
     const dayOrder = ["THURSDAY", "SUNDAY", "MONDAY"];
     const schedule = document.getElementById("schedule");
-    const search = document.getElementById("search");
     const totalGames = document.getElementById("total-games");
 
     function signed(value) {
@@ -418,30 +405,22 @@
 
     function gameCard(item) {
       const pick = modelPick(item);
-      const pickHome = item.modelValue < item.lineValue;
-      const pickDescription = pickHome ? "Home-team spread" : "Away-team spread";
+      const venue = venues[item.home];
       return "<article class=\"game-card\">" +
-        "<div class=\"game-top\"><span><strong>" + item.kickoff + "</strong> / NFL</span><span>Algorithm output · " + item.home + " home</span></div>" +
+        "<div class=\"game-top\"><span><strong>" + item.kickoff + "</strong> / NFL</span><span>" + venue.stadium + " · " + venue.location + "</span></div>" +
         "<div class=\"matchup\">" + teamRow(item.away, "Away") + teamRow(item.home, "Home") + "</div>" +
         "<div class=\"signals\">" +
           "<div class=\"signal\"><span class=\"signal-label\">Market line</span><span class=\"signal-value\">" + item.line + "</span></div>" +
           "<div class=\"signal model\"><span class=\"signal-label\">Model line</span><span class=\"signal-value\">" + item.model + "</span></div>" +
-          "<div class=\"signal\"><span class=\"signal-label\">Model pick</span><span class=\"signal-value\">" + pick + "</span></div>" +
         "</div>" +
-        "<div class=\"pick-callout\"><span class=\"label\">Model picks</span><div><div class=\"pick\">" + pick + "</div><small>" + pickDescription + "</small></div></div>" +
+        "<div class=\"pick-callout\"><span class=\"label\">Model pick</span><div class=\"pick\">" + pick + "</div></div>" +
         "</article>";
     }
 
     function render() {
-      const query = search.value.trim().toLowerCase();
-      const visible = games.filter(item => {
-        const text = (item.away + " " + item.home + " " + teams[item.away].name + " " + teams[item.home].name).toLowerCase();
-        return text.includes(query);
-      });
-
-      totalGames.textContent = visible.length + (visible.length === 1 ? " game" : " games");
+      totalGames.textContent = games.length + (games.length === 1 ? " game" : " games");
       schedule.innerHTML = dayOrder.map(day => {
-        const dayGames = visible.filter(item => item.day === day);
+        const dayGames = games.filter(item => item.day === day);
         if (!dayGames.length) return "";
         return "<section class=\"day-section\"><div class=\"day-heading\"><strong>" + day + "</strong><span>" + dayGames.length + (dayGames.length === 1 ? " game" : " games") + "</span></div><div class=\"games\">" + dayGames.map(gameCard).join("") + "</div></section>";
       }).join("");
