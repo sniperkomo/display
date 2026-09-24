@@ -8,9 +8,9 @@ A small, dependency-free dashboard for displaying weekly NFL spread projections.
 - Matchup
 - Sportsbook line
 - Model projection
-- Model gap, calculated as model minus line from the home team's perspective
+- Model pick, the recommended team and sportsbook spread based on the model projection
 
-The current data was transcribed from the supplied model screenshot. The site is a display layer only; it does not contain or recreate the underlying prediction algorithm.
+The current data was transcribed from the supplied model screenshot. The site is a display layer only; it does not contain or recreate the underlying prediction algorithm. The model pick favors the home spread when the model is more favorable to the home team; otherwise it selects the away spread with the sign flipped.
 
 ## Publish with GitHub Pages
 
