@@ -173,21 +173,14 @@
       font-variant-numeric: tabular-nums;
     }
 
-    .gap {
+    .pick {
       display: inline-flex;
-      min-width: 58px;
-      justify-content: center;
-      padding: 4px 8px;
+      padding: 5px 10px;
       border-radius: 999px;
       background: var(--accent-soft);
       color: var(--accent);
       font-variant-numeric: tabular-nums;
       font-weight: 800;
-    }
-
-    .gap.negative {
-      background: var(--blue-soft);
-      color: var(--blue);
     }
 
     .note {
@@ -252,7 +245,7 @@
               <th scope="col">Game</th>
               <th scope="col">Line</th>
               <th scope="col">Model</th>
-              <th scope="col">Model gap</th>
+              <th scope="col">Model pick</th>
             </tr>
           </thead>
           <tbody id="predictions"></tbody>
@@ -261,9 +254,9 @@
     </section>
 
     <p class="note">
-      The line and model are written from the home team's perspective. The model gap is
-      model minus line; a positive value means the model is more positive for the home team.
-      For the away team, the same number is shown with the sign flipped.
+      The line and model are written from the home team's perspective. The model pick recommends
+      the home team's listed spread when the model is more favorable to the home team; otherwise
+      it recommends the away team's spread with the sign flipped.
     </p>
 
     <footer>
@@ -298,20 +291,26 @@
       return value > 0 ? "+" + value.toFixed(1) : value.toFixed(1).replace("-", "−");
     }
 
+    function modelPick(item) {
+      const teams = item.game.split(" at ");
+      const awayTeam = teams[0];
+      const homeIsRecommended = item.modelValue < item.lineValue;
+      return homeIsRecommended ? item.line : awayTeam + " " + signed(-item.lineValue);
+    }
+
     function render() {
       const query = search.value.trim().toLowerCase();
       const visibleGames = games.filter(item => item.game.toLowerCase().includes(query));
       gameCount.textContent = visibleGames.length;
 
       tableBody.innerHTML = visibleGames.map(item => {
-        const gap = item.modelValue - item.lineValue;
-        const gapClass = gap < 0 ? "gap negative" : "gap";
+        const pick = modelPick(item);
         return "<tr>" +
           "<td class=\"subtle\">" + item.kickoff + "</td>" +
           "<td class=\"game\">" + item.game + "</td>" +
           "<td class=\"spread\">" + item.line + "</td>" +
           "<td class=\"model\">" + item.model + "</td>" +
-          "<td><span class=\"" + gapClass + "\">" + signed(gap) + "</span></td>" +
+          "<td><span class=\"pick\">" + pick + "</span></td>" +
           "</tr>";
       }).join("");
     }
