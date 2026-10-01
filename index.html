@@ -568,18 +568,6 @@
     }
 
     tabs.forEach(tab => {
-        const isActive = tab.dataset.mode === activeMode;
-        tab.classList.toggle("active", isActive);
-        tab.setAttribute("aria-selected", String(isActive));
-      });
-      schedule.innerHTML = dayOrder.map(day => {
-        const dayGames = visibleGames.filter(item => item.day === day);
-        if (!dayGames.length) return "";
-        return "<section class=\"day-section\"><div class=\"day-heading\"><strong>" + day + "</strong><span>" + dayGames.length + (dayGames.length === 1 ? " game" : " games") + "</span></div><div class=\"games\">" + dayGames.map(gameCard).join("") + "</div></section>";
-      }).join("");
-    }
-
-    tabs.forEach(tab => {
       tab.addEventListener("click", () => {
         activeMode = tab.dataset.mode;
         render();
