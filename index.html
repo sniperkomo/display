@@ -94,7 +94,7 @@
 
     .model-tabs {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       margin-bottom: 22px;
       border: 1px solid var(--rule);
       background: var(--paper);
@@ -278,6 +278,16 @@
       white-space: nowrap;
     }
 
+    .consensus-lines {
+      display: grid;
+      gap: 3px;
+      color: var(--green);
+      font-size: 0.82rem;
+      font-weight: 600;
+      line-height: 1.25;
+      white-space: normal;
+    }
+
     .signal.model .signal-value { color: var(--green); }
 
     .pick-callout {
@@ -360,6 +370,9 @@
       <button class="model-tab" id="adjusted-tab" type="button" role="tab" aria-selected="false" aria-controls="schedule" data-mode="adjusted">
         Market-adjusted predictions
       </button>
+      <button class="model-tab" id="consensus-tab" type="button" role="tab" aria-selected="false" aria-controls="schedule" data-mode="consensus">
+        Consensus picks
+      </button>
     </div>
 
     <section class="controls" aria-label="Dashboard summary">
@@ -371,6 +384,7 @@
 
     <p class="site-note">
       Switch tabs to compare the football-only projection with the market-adjusted projection.
+      The consensus tab only shows games where both algorithms recommend the same spread.
       Every card uses the home-team spread convention and highlights the spread recommended by
       the selected algorithm against the market line.
     </p>
@@ -460,7 +474,8 @@
     const dayOrder = ["THURSDAY", "SUNDAY", "MONDAY"];
     const modeLabels = {
       football: { tab: "Football-only predictions", algorithm: "Football-only algorithm", line: "Football-only line" },
-      adjusted: { tab: "Market-adjusted predictions", algorithm: "Market-adjusted algorithm", line: "Market-adjusted line" }
+      adjusted: { tab: "Market-adjusted predictions", algorithm: "Market-adjusted algorithm", line: "Market-adjusted line" },
+      consensus: { tab: "Consensus picks", algorithm: "Both models agree", line: "Both model lines" }
     };
     let activeMode = "football";
 
@@ -490,6 +505,10 @@
         : spreadText(item.away, -marketValue);
     }
 
+    function consensusPick(item) {
+      return modelPick(item, item.football) === modelPick(item, item.adjusted);
+    }
+
     function teamRow(code, role) {
       const team = teams[code];
       const logoCode = logoCodes[code] || code.toLowerCase();
@@ -500,23 +519,29 @@
     }
 
     function gameCard(item) {
-      const prediction = item[activeMode];
+      const isConsensus = activeMode === "consensus";
+      const prediction = isConsensus ? item.football : item[activeMode];
       const venue = venues[item.home];
       const modelLine = spreadText(item.home, homeSpread(item, prediction));
+      const modelLines = isConsensus
+        ? '<span class="consensus-lines"><span>Football-only · ' + spreadText(item.home, homeSpread(item, item.football)) + '</span><span>Market-adjusted · ' + spreadText(item.home, homeSpread(item, item.adjusted)) + '</span></span>'
+        : modelLine;
       const pick = modelPick(item, prediction);
-      return "<article class=\"game-card\">" +
-        "<div class=\"game-top\"><span><strong>" + item.kickoff + "</strong> / NFL</span><span>" + venue.stadium + " · " + venue.location + "</span></div>" +
-        "<div class=\"matchup\">" + teamRow(item.away, "Away") + teamRow(item.home, "Home") + "</div>" +
-        "<div class=\"signals\">" +
-          "<div class=\"signal\"><span class=\"signal-label\">Market line</span><span class=\"signal-value\">" + spreadText(item.home, homeSpread(item, item.market)) + "</span></div>" +
-          "<div class=\"signal model\"><span class=\"signal-label\">" + modeLabels[activeMode].line + "</span><span class=\"signal-value\">" + modelLine + "</span></div>" +
-        "</div>" +
-        "<div class=\"pick-callout\"><span class=\"label\">Model pick</span><div class=\"pick\">" + pick + "</div></div>" +
-        "</article>";
+      const pickLabel = isConsensus ? "Consensus pick" : "Model pick";
+      return '<article class="game-card">' +
+        '<div class="game-top"><span><strong>' + item.kickoff + '</strong> / NFL</span><span>' + venue.stadium + ' · ' + venue.location + '</span></div>' +
+        '<div class="matchup">' + teamRow(item.away, "Away") + teamRow(item.home, "Home") + '</div>' +
+        '<div class="signals">' +
+          '<div class="signal"><span class="signal-label">Market line</span><span class="signal-value">' + spreadText(item.home, homeSpread(item, item.market)) + '</span></div>' +
+          '<div class="signal model"><span class="signal-label">' + modeLabels[activeMode].line + '</span><span class="signal-value">' + modelLines + '</span></div>' +
+        '</div>' +
+        '<div class="pick-callout"><span class="label">' + pickLabel + '</span><div class="pick">' + pick + '</div></div>' +
+        '</article>';
     }
 
     function render() {
-      totalGames.textContent = games.length + (games.length === 1 ? " game" : " games");
+      const visibleGames = activeMode === "consensus" ? games.filter(consensusPick) : games;
+      totalGames.textContent = visibleGames.length + (visibleGames.length === 1 ? " game" : " games");
       activeModel.textContent = modeLabels[activeMode].algorithm;
       tabs.forEach(tab => {
         const isActive = tab.dataset.mode === activeMode;
@@ -524,7 +549,7 @@
         tab.setAttribute("aria-selected", String(isActive));
       });
       schedule.innerHTML = dayOrder.map(day => {
-        const dayGames = games.filter(item => item.day === day);
+        const dayGames = visibleGames.filter(item => item.day === day);
         if (!dayGames.length) return "";
         return "<section class=\"day-section\"><div class=\"day-heading\"><strong>" + day + "</strong><span>" + dayGames.length + (dayGames.length === 1 ? " game" : " games") + "</span></div><div class=\"games\">" + dayGames.map(gameCard).join("") + "</div></section>";
       }).join("");
