@@ -94,7 +94,7 @@
 
     .model-tabs {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       margin-bottom: 22px;
       border: 1px solid var(--rule);
       background: var(--paper);
@@ -373,6 +373,9 @@
       <button class="model-tab" id="consensus-tab" type="button" role="tab" aria-selected="false" aria-controls="schedule" data-mode="consensus">
         Consensus picks
       </button>
+      <button class="model-tab" id="player-tab" type="button" role="tab" aria-selected="false" aria-controls="schedule" data-mode="player">
+        Player probabilities
+      </button>
     </div>
 
     <section class="controls" aria-label="Dashboard summary">
@@ -475,7 +478,8 @@
     const modeLabels = {
       football: { tab: "Football-only predictions", algorithm: "Football-only algorithm", line: "Football-only line" },
       adjusted: { tab: "Market-adjusted predictions", algorithm: "Market-adjusted algorithm", line: "Market-adjusted line" },
-      consensus: { tab: "Consensus picks", algorithm: "Both models agree", line: "Both model lines" }
+      consensus: { tab: "Consensus picks", algorithm: "Both models agree", line: "Both model lines" },
+      player: { tab: "Player probabilities", algorithm: "Reserved for player data", line: "Player probabilities" }
     };
     let activeMode = "football";
 
@@ -540,10 +544,30 @@
     }
 
     function render() {
+      tabs.forEach(tab => {
+        const isActive = tab.dataset.mode === activeMode;
+        tab.classList.toggle("active", isActive);
+        tab.setAttribute("aria-selected", String(isActive));
+      });
+
+      if (activeMode === "player") {
+        totalGames.textContent = "Player probabilities";
+        activeModel.textContent = "Reserved for player data";
+        schedule.innerHTML = "";
+        return;
+      }
+
       const visibleGames = activeMode === "consensus" ? games.filter(consensusPick) : games;
       totalGames.textContent = visibleGames.length + (visibleGames.length === 1 ? " game" : " games");
       activeModel.textContent = modeLabels[activeMode].algorithm;
-      tabs.forEach(tab => {
+      schedule.innerHTML = dayOrder.map(day => {
+        const dayGames = visibleGames.filter(item => item.day === day);
+        if (!dayGames.length) return "";
+        return "<section class=\"day-section\"><div class=\"day-heading\"><strong>" + day + "</strong><span>" + dayGames.length + (dayGames.length === 1 ? " game" : " games") + "</span></div><div class=\"games\">" + dayGames.map(gameCard).join("") + "</div></section>";
+      }).join("");
+    }
+
+    tabs.forEach(tab => {
         const isActive = tab.dataset.mode === activeMode;
         tab.classList.toggle("active", isActive);
         tab.setAttribute("aria-selected", String(isActive));
