@@ -94,7 +94,7 @@
 
     .model-tabs {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       margin-bottom: 22px;
       border: 1px solid var(--rule);
       background: var(--paper);
@@ -181,6 +181,25 @@
       text-transform: uppercase;
     }
 
+    .player-props-empty {
+      margin-top: 36px;
+      padding: 30px;
+      border: 1px solid var(--rule);
+      background: var(--paper);
+      box-shadow: 0 8px 24px rgba(20, 64, 72, 0.05);
+    }
+
+    .player-props-empty h2 {
+      margin: 0 0 8px;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      letter-spacing: -0.04em;
+    }
+
+    .player-props-empty p:last-child {
+      margin: 0;
+      color: var(--muted);
+    }
+
     .day-section { margin-top: 36px; }
 
     .day-heading {
@@ -247,6 +266,12 @@
       min-width: 0;
     }
 
+    .team-name-wrap {
+      display: grid;
+      gap: 5px;
+      min-width: 0;
+    }
+
     .team-logo {
       width: 66px;
       height: 66px;
@@ -261,6 +286,13 @@
       font-weight: 600;
       letter-spacing: -0.06em;
       line-height: 1;
+    }
+
+    .team-record {
+      color: var(--muted);
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
     }
 
     .team-detail {
@@ -400,7 +432,7 @@
       </div>
     </header>
 
-    <div class="model-tabs" role="tablist" aria-label="Prediction model">
+    <div class="model-tabs" role="tablist" aria-label="Prediction views">
       <button class="model-tab active" id="football-tab" type="button" role="tab" aria-selected="true" aria-controls="schedule" data-mode="football">
         Football-only predictions
       </button>
@@ -409,6 +441,9 @@
       </button>
       <button class="model-tab" id="consensus-tab" type="button" role="tab" aria-selected="false" aria-controls="schedule" data-mode="consensus">
         Consensus picks
+      </button>
+      <button class="model-tab" id="props-tab" type="button" role="tab" aria-selected="false" aria-controls="schedule" data-mode="props">
+        Player props
       </button>
     </div>
 
@@ -449,38 +484,38 @@
 
   <script>
     const teams = {
-      ATL: { name: "Atlanta Falcons", color: "#a71930" },
-      GB: { name: "Green Bay Packers", color: "#203731" },
-      CAR: { name: "Carolina Panthers", color: "#0085ca" },
-      CLE: { name: "Cleveland Browns", color: "#311d00" },
-      CIN: { name: "Cincinnati Bengals", color: "#fb4f14" },
-      PIT: { name: "Pittsburgh Steelers", color: "#101820" },
-      HOU: { name: "Houston Texans", color: "#03202f" },
-      DAL: { name: "Dallas Cowboys", color: "#003594" },
-      WAS: { name: "Washington Commanders", color: "#5a1414" },
-      IND: { name: "Indianapolis Colts", color: "#002c5f" },
-      KC: { name: "Kansas City Chiefs", color: "#e31837" },
-      LV: { name: "Las Vegas Raiders", color: "#000000" },
-      MIA: { name: "Miami Dolphins", color: "#008e97" },
-      MIN: { name: "Minnesota Vikings", color: "#4f2683" },
-      LAC: { name: "Los Angeles Chargers", color: "#0080c6" },
-      BUF: { name: "Buffalo Bills", color: "#00338d" },
-      NE: { name: "New England Patriots", color: "#002244" },
-      JAX: { name: "Jacksonville Jaguars", color: "#006778" },
-      NYJ: { name: "New York Jets", color: "#125740" },
-      DET: { name: "Detroit Lions", color: "#0076b6" },
-      SEA: { name: "Seattle Seahawks", color: "#002244" },
-      TEN: { name: "Tennessee Titans", color: "#0c2340" },
-      BAL: { name: "Baltimore Ravens", color: "#241773" },
-      NYG: { name: "New York Giants", color: "#0b2265" },
-      ARI: { name: "Arizona Cardinals", color: "#97233f" },
-      SF: { name: "San Francisco 49ers", color: "#aa0000" },
-      TB: { name: "Tampa Bay Buccaneers", color: "#d50a0a" },
-      NO: { name: "New Orleans Saints", color: "#d3bc8d" },
-      LAR: { name: "Los Angeles Rams", color: "#003594" },
-      DEN: { name: "Denver Broncos", color: "#fb4f14" },
-      PHI: { name: "Philadelphia Eagles", color: "#004c54" },
-      CHI: { name: "Chicago Bears", color: "#0b162a" }
+      ATL: { name: "Atlanta Falcons", color: "#a71930", record: "2–2" },
+      GB: { name: "Green Bay Packers", color: "#203731", record: "2–2" },
+      CAR: { name: "Carolina Panthers", color: "#0085ca", record: "2–2" },
+      CLE: { name: "Cleveland Browns", color: "#311d00", record: "3–1" },
+      CIN: { name: "Cincinnati Bengals", color: "#fb4f14", record: "2–2" },
+      PIT: { name: "Pittsburgh Steelers", color: "#101820", record: "2–2" },
+      HOU: { name: "Houston Texans", color: "#03202f", record: "0–4" },
+      DAL: { name: "Dallas Cowboys", color: "#003594", record: "2–2" },
+      WAS: { name: "Washington Commanders", color: "#5a1414", record: "1–3" },
+      IND: { name: "Indianapolis Colts", color: "#002c5f", record: "2–2" },
+      KC: { name: "Kansas City Chiefs", color: "#e31837", record: "4–0" },
+      LV: { name: "Las Vegas Raiders", color: "#000000", record: "3–1" },
+      MIA: { name: "Miami Dolphins", color: "#008e97", record: "0–4" },
+      MIN: { name: "Minnesota Vikings", color: "#4f2683", record: "4–0" },
+      LAC: { name: "Los Angeles Chargers", color: "#0080c6", record: "0–4" },
+      BUF: { name: "Buffalo Bills", color: "#00338d", record: "3–1" },
+      NE: { name: "New England Patriots", color: "#002244", record: "2–2" },
+      JAX: { name: "Jacksonville Jaguars", color: "#006778", record: "3–1" },
+      NYJ: { name: "New York Jets", color: "#125740", record: "1–3" },
+      DET: { name: "Detroit Lions", color: "#0076b6", record: "2–2" },
+      SEA: { name: "Seattle Seahawks", color: "#002244", record: "3–1" },
+      TEN: { name: "Tennessee Titans", color: "#0c2340", record: "0–4" },
+      BAL: { name: "Baltimore Ravens", color: "#241773", record: "3–1" },
+      NYG: { name: "New York Giants", color: "#0b2265", record: "3–1" },
+      ARI: { name: "Arizona Cardinals", color: "#97233f", record: "1–3" },
+      SF: { name: "San Francisco 49ers", color: "#aa0000", record: "4–0" },
+      TB: { name: "Tampa Bay Buccaneers", color: "#d50a0a", record: "0–4" },
+      NO: { name: "New Orleans Saints", color: "#d3bc8d", record: "1–3" },
+      LAR: { name: "Los Angeles Rams", color: "#003594", record: "2–2" },
+      DEN: { name: "Denver Broncos", color: "#fb4f14", record: "2–2" },
+      PHI: { name: "Philadelphia Eagles", color: "#004c54", record: "2–2" },
+      CHI: { name: "Chicago Bears", color: "#0b162a", record: "3–1" }
     };
 
     const logoCodes = {
@@ -545,8 +580,10 @@
     const modeLabels = {
       football: { tab: "Football-only predictions", algorithm: "Football-only algorithm", line: "Football-only line" },
       adjusted: { tab: "Market-adjusted predictions", algorithm: "Market-adjusted algorithm", line: "Market-adjusted line" },
-      consensus: { tab: "Consensus picks", algorithm: "Both models agree", line: "Both model lines" }
+      consensus: { tab: "Consensus picks", algorithm: "Both models agree", line: "Both model lines" },
+      props: { tab: "Player props", algorithm: "Player prop picks" }
     };
+    const playerProps = [];
     let activeMode = "football";
 
     const schedule = document.getElementById("schedule");
@@ -579,11 +616,17 @@
       return modelPick(item, item.football) === modelPick(item, item.adjusted);
     }
 
+    function renderPlayerProps() {
+      totalGames.textContent = playerProps.length + (playerProps.length === 1 ? " prop" : " props");
+      activeModel.textContent = modeLabels.props.algorithm;
+      schedule.innerHTML = '<section class="player-props-empty"><p class="kicker">Player props</p><h2>No player prop picks yet</h2><p>Player prop picks will appear here once they are added.</p></section>';
+    }
+
     function teamRow(code, role) {
       const team = teams[code];
       const logoCode = logoCodes[code] || code.toLowerCase();
       return "<div class=\"team-row\">" +
-        "<div class=\"team-info\"><div class=\"team-name-line\"><img class=\"team-logo\" src=\"https://a.espncdn.com/i/teamlogos/nfl/500/" + logoCode + ".png\" alt=\"" + team.name + " logo\" loading=\"lazy\"><div class=\"team-name\">" + team.name + "</div></div><span class=\"team-detail\">" + code + " · " + role + "</span></div>" +
+        "<div class=\"team-info\"><div class=\"team-name-line\"><img class=\"team-logo\" src=\"https://a.espncdn.com/i/teamlogos/nfl/500/" + logoCode + ".png\" alt=\"" + team.name + " logo\" loading=\"lazy\"><div class=\"team-name-wrap\"><div class=\"team-name\">" + team.name + "</div><span class=\"team-record\">(" + team.record + ")</span></div></div><span class=\"team-detail\">" + code + " · " + role + "</span></div>" +
         "<div class=\"team-role\">" + role + "</div>" +
         "</div>";
     }
@@ -618,6 +661,10 @@
         tab.classList.toggle("active", isActive);
         tab.setAttribute("aria-selected", String(isActive));
       });
+      if (activeMode === "props") {
+        renderPlayerProps();
+        return;
+      }
       schedule.innerHTML = dayOrder.map(day => {
         const dayGames = visibleGames.filter(item => item.day === day);
         if (!dayGames.length) return "";
