@@ -94,7 +94,7 @@
 
     .model-tabs {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       margin-bottom: 22px;
       border: 1px solid var(--rule);
       background: var(--paper);
@@ -179,25 +179,6 @@
       color: var(--muted);
       font-size: 0.76rem;
       text-transform: uppercase;
-    }
-
-    .player-props-empty {
-      margin-top: 36px;
-      padding: 30px;
-      border: 1px solid var(--rule);
-      background: var(--paper);
-      box-shadow: 0 8px 24px rgba(20, 64, 72, 0.05);
-    }
-
-    .player-props-empty h2 {
-      margin: 0 0 8px;
-      font-size: clamp(1.4rem, 3vw, 2rem);
-      letter-spacing: -0.04em;
-    }
-
-    .player-props-empty p:last-child {
-      margin: 0;
-      color: var(--muted);
     }
 
     .day-section { margin-top: 36px; }
@@ -442,9 +423,6 @@
       <button class="model-tab" id="consensus-tab" type="button" role="tab" aria-selected="false" aria-controls="schedule" data-mode="consensus">
         Consensus picks
       </button>
-      <button class="model-tab" id="props-tab" type="button" role="tab" aria-selected="false" aria-controls="schedule" data-mode="props">
-        Player props
-      </button>
     </div>
 
     <div class="record-strip" aria-label="Rolling model records">
@@ -580,10 +558,8 @@
     const modeLabels = {
       football: { tab: "Football-only predictions", algorithm: "Football-only algorithm", line: "Football-only line" },
       adjusted: { tab: "Market-adjusted predictions", algorithm: "Market-adjusted algorithm", line: "Market-adjusted line" },
-      consensus: { tab: "Consensus picks", algorithm: "Both models agree", line: "Both model lines" },
-      props: { tab: "Player props", algorithm: "Player prop picks" }
+      consensus: { tab: "Consensus picks", algorithm: "Both models agree", line: "Both model lines" }
     };
-    const playerProps = [];
     let activeMode = "football";
 
     const schedule = document.getElementById("schedule");
@@ -614,12 +590,6 @@
 
     function consensusPick(item) {
       return modelPick(item, item.football) === modelPick(item, item.adjusted);
-    }
-
-    function renderPlayerProps() {
-      totalGames.textContent = playerProps.length + (playerProps.length === 1 ? " prop" : " props");
-      activeModel.textContent = modeLabels.props.algorithm;
-      schedule.innerHTML = '<section class="player-props-empty"><p class="kicker">Player props</p><h2>No player prop picks yet</h2><p>Player prop picks will appear here once they are added.</p></section>';
     }
 
     function teamRow(code, role) {
@@ -661,10 +631,6 @@
         tab.classList.toggle("active", isActive);
         tab.setAttribute("aria-selected", String(isActive));
       });
-      if (activeMode === "props") {
-        renderPlayerProps();
-        return;
-      }
       schedule.innerHTML = dayOrder.map(day => {
         const dayGames = visibleGames.filter(item => item.day === day);
         if (!dayGames.length) return "";
