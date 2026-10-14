@@ -455,8 +455,8 @@
     <div id="schedule" role="tabpanel" aria-live="polite"></div>
 
     <p class="site-note">
-      EDGE is the selected model's home-team spread minus the market's home-team spread. The EDGE Picks tab
-      uses the football-only model and includes games with an absolute EDGE of at least 3.0 points.
+      EDGE is the absolute difference between the selected model's and the market's home-team spread.
+      The EDGE Picks tab uses the football-only model and includes games with an EDGE of at least 3.0 points.
       The consensus tab only shows games where both algorithms recommend the same spread.
       Every card highlights the spread recommended by the selected algorithm against the market line.
     </p>
@@ -560,9 +560,9 @@
 
     const dayOrder = ["THURSDAY, OCTOBER 8", "SUNDAY, OCTOBER 11", "MONDAY, OCTOBER 12"];
     const modeLabels = {
-      football: { tab: "Football-only predictions", algorithm: "Football-only algorithm", line: "Football-only line", summary: "Market line · model line · EDGE · recommended spread" },
-      adjusted: { tab: "Market-adjusted predictions", algorithm: "Market-adjusted algorithm", line: "Market-adjusted line", summary: "Market line · model line · EDGE · recommended spread" },
-      consensus: { tab: "Consensus picks", algorithm: "Both models agree", line: "Both model lines", summary: "Market line · both model lines · both EDGEs · consensus spread" },
+      football: { tab: "Football-only predictions", algorithm: "Football-only algorithm", line: "Football-only line", summary: "Market line · model line · absolute EDGE · recommended spread" },
+      adjusted: { tab: "Market-adjusted predictions", algorithm: "Market-adjusted algorithm", line: "Market-adjusted line", summary: "Market line · model line · absolute EDGE · recommended spread" },
+      consensus: { tab: "Consensus picks", algorithm: "Both models agree", line: "Both model lines", summary: "Market line · both model lines · both absolute EDGEs · consensus spread" },
       edge: { tab: "EDGE picks", algorithm: "Football-only EDGE · at least 3.0 points", line: "Football-only line", summary: "Football-only model · absolute EDGE ≥ 3.0 points" }
     };
     let activeMode = "football";
@@ -582,7 +582,7 @@
     }
 
     function edgeValue(item, prediction) {
-      return homeSpread(item, prediction) - homeSpread(item, item.market);
+      return Math.abs(homeSpread(item, prediction) - homeSpread(item, item.market));
     }
 
     function spreadText(code, value) {
@@ -620,8 +620,8 @@
         ? '<span class="consensus-lines"><span>Football-only · ' + spreadText(item.home, homeSpread(item, item.football)) + '</span><span>Market-adjusted · ' + spreadText(item.home, homeSpread(item, item.adjusted)) + '</span></span>'
         : modelLine;
       const edgeLines = isConsensus
-        ? '<span class="consensus-lines"><span>Football-only · ' + signed(edgeValue(item, item.football)) + ' pts</span><span>Market-adjusted · ' + signed(edgeValue(item, item.adjusted)) + ' pts</span></span>'
-        : signed(edgeValue(item, prediction)) + ' pts';
+        ? '<span class="consensus-lines"><span>Football-only · ' + edgeValue(item, item.football).toFixed(1) + ' pts</span><span>Market-adjusted · ' + edgeValue(item, item.adjusted).toFixed(1) + ' pts</span></span>'
+        : edgeValue(item, prediction).toFixed(1) + ' pts';
       const pick = modelPick(item, prediction);
       const pickLabel = isConsensus ? "Consensus pick" : activeMode === "edge" ? "EDGE pick" : "Model pick";
       return '<article class="game-card">' +
@@ -630,7 +630,7 @@
         '<div class="signals">' +
           '<div class="signal"><span class="signal-label">Market line</span><span class="signal-value">' + spreadText(item.home, homeSpread(item, item.market)) + '</span></div>' +
           '<div class="signal model"><span class="signal-label">' + modeLabels[activeMode].line + '</span><span class="signal-value">' + modelLines + '</span></div>' +
-          '<div class="signal edge"><span class="signal-label">EDGE · model − market</span><span class="signal-value">' + edgeLines + '</span></div>' +
+          '<div class="signal edge"><span class="signal-label">EDGE · absolute points</span><span class="signal-value">' + edgeLines + '</span></div>' +
         '</div>' +
         '<div class="pick-callout"><span class="label">' + pickLabel + '</span><div class="pick">' + pick + '</div></div>' +
         '</article>';
@@ -640,7 +640,7 @@
       const visibleGames = activeMode === "consensus"
         ? games.filter(consensusPick)
         : activeMode === "edge"
-          ? games.filter(item => Math.abs(edgeValue(item, item.football)) >= 3)
+          ? games.filter(item => edgeValue(item, item.football) >= 3)
           : games;
       totalGames.textContent = visibleGames.length + (visibleGames.length === 1 ? " game" : " games");
       activeModel.textContent = modeLabels[activeMode].algorithm;
