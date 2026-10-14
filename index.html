@@ -94,7 +94,7 @@
 
     .model-tabs {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       margin-bottom: 22px;
       border: 1px solid var(--rule);
       background: var(--paper);
@@ -296,7 +296,7 @@
 
     .signals {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       border-bottom: 2px solid var(--rule);
     }
 
@@ -337,6 +337,7 @@
     }
 
     .signal.model .signal-value { color: var(--green); }
+    .signal.edge .signal-value { color: var(--green); }
 
     .pick-callout {
       display: flex;
@@ -423,6 +424,9 @@
       <button class="model-tab" id="consensus-tab" type="button" role="tab" aria-selected="false" aria-controls="schedule" data-mode="consensus">
         Consensus picks
       </button>
+      <button class="model-tab" id="edge-tab" type="button" role="tab" aria-selected="false" aria-controls="schedule" data-mode="edge">
+        EDGE picks
+      </button>
     </div>
 
     <div class="record-strip" aria-label="Rolling model records">
@@ -444,17 +448,17 @@
     </div>
 
     <section class="controls" aria-label="Dashboard summary">
-      <div class="controls-copy">Market line · model line · recommended spread</div>
+      <div class="controls-copy" id="view-description">Market line · model line · EDGE · recommended spread</div>
       <div class="controls-copy" id="active-model">Football-only algorithm</div>
     </section>
 
     <div id="schedule" role="tabpanel" aria-live="polite"></div>
 
     <p class="site-note">
-      Switch tabs to compare the football-only projection with the market-adjusted projection.
+      EDGE is the selected model's home-team spread minus the market's home-team spread. The EDGE Picks tab
+      uses the football-only model and includes games with an absolute EDGE of at least 3.0 points.
       The consensus tab only shows games where both algorithms recommend the same spread.
-      Every card uses the home-team spread convention and highlights the spread recommended by
-      the selected algorithm against the market line.
+      Every card highlights the spread recommended by the selected algorithm against the market line.
     </p>
 
     <footer>Week 5 projections transcribed from the supplied model screenshot · Informational display only · Predictions are not guarantees</footer>
@@ -556,15 +560,17 @@
 
     const dayOrder = ["THURSDAY, OCTOBER 8", "SUNDAY, OCTOBER 11", "MONDAY, OCTOBER 12"];
     const modeLabels = {
-      football: { tab: "Football-only predictions", algorithm: "Football-only algorithm", line: "Football-only line" },
-      adjusted: { tab: "Market-adjusted predictions", algorithm: "Market-adjusted algorithm", line: "Market-adjusted line" },
-      consensus: { tab: "Consensus picks", algorithm: "Both models agree", line: "Both model lines" }
+      football: { tab: "Football-only predictions", algorithm: "Football-only algorithm", line: "Football-only line", summary: "Market line · model line · EDGE · recommended spread" },
+      adjusted: { tab: "Market-adjusted predictions", algorithm: "Market-adjusted algorithm", line: "Market-adjusted line", summary: "Market line · model line · EDGE · recommended spread" },
+      consensus: { tab: "Consensus picks", algorithm: "Both models agree", line: "Both model lines", summary: "Market line · both model lines · both EDGEs · consensus spread" },
+      edge: { tab: "EDGE picks", algorithm: "Football-only EDGE · at least 3.0 points", line: "Football-only line", summary: "Football-only model · absolute EDGE ≥ 3.0 points" }
     };
     let activeMode = "football";
 
     const schedule = document.getElementById("schedule");
     const totalGames = document.getElementById("total-games");
     const activeModel = document.getElementById("active-model");
+    const viewDescription = document.getElementById("view-description");
     const tabs = Array.from(document.querySelectorAll(".model-tab"));
 
     function signed(value) {
@@ -573,6 +579,10 @@
 
     function homeSpread(item, prediction) {
       return prediction.team === item.home ? -prediction.margin : prediction.margin;
+    }
+
+    function edgeValue(item, prediction) {
+      return homeSpread(item, prediction) - homeSpread(item, item.market);
     }
 
     function spreadText(code, value) {
@@ -603,29 +613,38 @@
 
     function gameCard(item) {
       const isConsensus = activeMode === "consensus";
-      const prediction = isConsensus ? item.football : item[activeMode];
+      const prediction = isConsensus || activeMode === "edge" ? item.football : item[activeMode];
       const venue = venues[item.home];
       const modelLine = spreadText(item.home, homeSpread(item, prediction));
       const modelLines = isConsensus
         ? '<span class="consensus-lines"><span>Football-only · ' + spreadText(item.home, homeSpread(item, item.football)) + '</span><span>Market-adjusted · ' + spreadText(item.home, homeSpread(item, item.adjusted)) + '</span></span>'
         : modelLine;
+      const edgeLines = isConsensus
+        ? '<span class="consensus-lines"><span>Football-only · ' + signed(edgeValue(item, item.football)) + ' pts</span><span>Market-adjusted · ' + signed(edgeValue(item, item.adjusted)) + ' pts</span></span>'
+        : signed(edgeValue(item, prediction)) + ' pts';
       const pick = modelPick(item, prediction);
-      const pickLabel = isConsensus ? "Consensus pick" : "Model pick";
+      const pickLabel = isConsensus ? "Consensus pick" : activeMode === "edge" ? "EDGE pick" : "Model pick";
       return '<article class="game-card">' +
         '<div class="game-top"><span><strong>' + item.kickoff + '</strong> / NFL</span><span>' + venue.stadium + ' · ' + venue.location + '</span></div>' +
         '<div class="matchup">' + teamRow(item.away, "Away") + teamRow(item.home, "Home") + '</div>' +
         '<div class="signals">' +
           '<div class="signal"><span class="signal-label">Market line</span><span class="signal-value">' + spreadText(item.home, homeSpread(item, item.market)) + '</span></div>' +
           '<div class="signal model"><span class="signal-label">' + modeLabels[activeMode].line + '</span><span class="signal-value">' + modelLines + '</span></div>' +
+          '<div class="signal edge"><span class="signal-label">EDGE · model − market</span><span class="signal-value">' + edgeLines + '</span></div>' +
         '</div>' +
         '<div class="pick-callout"><span class="label">' + pickLabel + '</span><div class="pick">' + pick + '</div></div>' +
         '</article>';
     }
 
     function render() {
-      const visibleGames = activeMode === "consensus" ? games.filter(consensusPick) : games;
+      const visibleGames = activeMode === "consensus"
+        ? games.filter(consensusPick)
+        : activeMode === "edge"
+          ? games.filter(item => Math.abs(edgeValue(item, item.football)) >= 3)
+          : games;
       totalGames.textContent = visibleGames.length + (visibleGames.length === 1 ? " game" : " games");
       activeModel.textContent = modeLabels[activeMode].algorithm;
+      viewDescription.textContent = modeLabels[activeMode].summary;
       tabs.forEach(tab => {
         const isActive = tab.dataset.mode === activeMode;
         tab.classList.toggle("active", isActive);
