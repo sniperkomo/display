@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NFL Week 5 Predictions</title>
-  <meta name="description" content="NFL Week 5 football-only and market-adjusted spread predictions.">
+  <title>NFL Week 6 Predictions</title>
+  <meta name="description" content="NFL Week 6 football-only and market-adjusted spread predictions.">
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@400;500;600;700;800&display=swap");
 
@@ -390,10 +390,10 @@
     <header class="site-header">
       <div>
         <p class="kicker">Weekly spread board</p>
-        <h1>NFL Week 5<br><span>Predictions</span></h1>
+        <h1>NFL Week 6<br><span>Predictions</span></h1>
       </div>
       <div class="header-meta">
-        <strong id="total-games">15 games</strong>
+        <strong id="total-games">13 games</strong>
         <span>Market × model</span>
         <span>Model picks highlighted</span>
         <span class="record">Rolling football-only: 17–12–1</span>
@@ -444,7 +444,7 @@
       the selected algorithm against the market line.
     </p>
 
-    <footer>Week 5 projections transcribed from the supplied model screenshot · Informational display only · Predictions are not guarantees</footer>
+    <footer>Week 6 projections transcribed from the supplied model screenshot · Informational display only · Predictions are not guarantees</footer>
   </main>
 
   <script>
@@ -507,6 +507,7 @@
       SEA: { stadium: "Lumen Field", location: "Seattle, WA" },
       ATL: { stadium: "Mercedes-Benz Stadium", location: "Atlanta, GA" },
       LAR: { stadium: "SoFi Stadium", location: "Inglewood, CA" },
+      DEN: { stadium: "Empower Field at Mile High", location: "Denver, CO" },
       CLE: { stadium: "Huntington Bank Field", location: "Cleveland, OH" },
       NYG: { stadium: "MetLife Stadium", location: "East Rutherford, NJ" },
       HOU: { stadium: "NRG Stadium", location: "Houston, TX" },
@@ -518,30 +519,30 @@
       BAL: { stadium: "M&T Bank Stadium", location: "Baltimore, MD" },
       MIN: { stadium: "U.S. Bank Stadium", location: "Minneapolis, MN" },
       SF: { stadium: "Levi's Stadium", location: "Santa Clara, CA" },
+      IND: { stadium: "Lucas Oil Stadium", location: "Indianapolis, IN" },
+      KC: { stadium: "Arrowhead Stadium", location: "Kansas City, MO" },
       LV: { stadium: "Allegiant Stadium", location: "Las Vegas, NV" },
       CAR: { stadium: "Bank of America Stadium", location: "Charlotte, NC" },
       SEA: { stadium: "Lumen Field", location: "Seattle, WA" }
     };
 
     const games = [
-      { day: "THURSDAY, OCTOBER 8", kickoff: "8:15 PM ET", away: "TB", home: "DAL", market: { team: "DAL", margin: 8.5 }, football: { team: "DAL", margin: 5.4 }, adjusted: { team: "DAL", margin: 8.9 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "9:30 AM ET", away: "PHI", home: "JAX", market: { team: "JAX", margin: 7.5 }, football: { team: "JAX", margin: 12.4 }, adjusted: { team: "JAX", margin: 8.7 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "1:00 PM ET", away: "CIN", home: "MIA", market: { team: "CIN", margin: 6.5 }, football: { team: "CIN", margin: 5.5 }, adjusted: { team: "CIN", margin: 7.0 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "1:00 PM ET", away: "CLE", home: "NYJ", market: { team: "NYJ", margin: 2.5 }, football: { team: "NYJ", margin: 2.3 }, adjusted: { team: "NYJ", margin: 3.4 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "1:00 PM ET", away: "HOU", home: "TEN", market: { team: "HOU", margin: 7.5 }, football: { team: "HOU", margin: 2.6 }, adjusted: { team: "HOU", margin: 6.3 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "1:00 PM ET", away: "IND", home: "PIT", market: { team: "PIT", margin: 2.5 }, football: { team: "PIT", margin: 1.9 }, adjusted: { team: "PIT", margin: 2.4 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "1:00 PM ET", away: "LV", home: "NE", market: { team: "NE", margin: 3.5 }, football: { team: "NE", margin: 4.9 }, adjusted: { team: "NE", margin: 4.6 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "1:00 PM ET", away: "MIN", home: "NO", market: { team: "MIN", margin: 2.5 }, football: { team: "NO", margin: 1.3 }, adjusted: { team: "MIN", margin: 0.3 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "1:00 PM ET", away: "NYG", home: "WAS", market: { team: "WAS", margin: 3.5 }, football: { team: "WAS", margin: 1.1 }, adjusted: { team: "WAS", margin: 3.5 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "4:05 PM ET", away: "DEN", home: "LAC", market: { team: "DEN", margin: 3.5 }, football: { team: "LAC", margin: 0.0 }, adjusted: { team: "DEN", margin: 2.8 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "4:25 PM ET", away: "CHI", home: "GB", market: { team: "CHI", margin: 2.5 }, football: { team: "CHI", margin: 5.3 }, adjusted: { team: "CHI", margin: 4.3 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "4:25 PM ET", away: "DET", home: "ARI", market: { team: "DET", margin: 5.5 }, football: { team: "DET", margin: 1.2 }, adjusted: { team: "DET", margin: 4.7 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "4:25 PM ET", away: "SF", home: "SEA", market: { team: "SEA", margin: 3.0 }, football: { team: "SF", margin: 2.0 }, adjusted: { team: "SEA", margin: 1.4 } },
-      { day: "SUNDAY, OCTOBER 11", kickoff: "8:20 PM ET", away: "BAL", home: "ATL", market: { team: "ATL", margin: 3.0 }, football: { team: "BAL", margin: 2.7 }, adjusted: { team: "ATL", margin: 2.5 } },
-      { day: "MONDAY, OCTOBER 12", kickoff: "8:15 PM ET", away: "BUF", home: "LAR", market: { team: "LAR", margin: 3.0 }, football: { team: "LAR", margin: 3.4 }, adjusted: { team: "LAR", margin: 2.8 } }
+      { day: "THURSDAY, OCTOBER 15", kickoff: "8:15 PM ET", away: "SEA", home: "DEN", market: { team: "SEA", margin: 2.5 }, football: { team: "SEA", margin: 0.7 }, adjusted: { team: "SEA", margin: 3.0 } },
+      { day: "SUNDAY, OCTOBER 18", kickoff: "1:00 PM ET", away: "BAL", home: "CLE", market: { team: "BAL", margin: 4.5 }, football: { team: "BAL", margin: 7.3 }, adjusted: { team: "BAL", margin: 6.3 } },
+      { day: "SUNDAY, OCTOBER 18", kickoff: "1:00 PM ET", away: "CAR", home: "PHI", market: { team: "CAR", margin: 3.5 }, football: { team: "CAR", margin: 4.2 }, adjusted: { team: "CAR", margin: 3.7 } },
+      { day: "SUNDAY, OCTOBER 18", kickoff: "1:00 PM ET", away: "CHI", home: "ATL", market: { team: "CHI", margin: 1.5 }, football: { team: "ATL", margin: 1.1 }, adjusted: { team: "CHI", margin: 1.6 } },
+      { day: "SUNDAY, OCTOBER 18", kickoff: "1:00 PM ET", away: "NO", home: "NYG", market: { team: "NO", margin: 1.5 }, football: { team: "NYG", margin: 3.0 }, adjusted: { team: "NO", margin: 2.0 } },
+      { day: "SUNDAY, OCTOBER 18", kickoff: "1:00 PM ET", away: "NYJ", home: "NE", market: { team: "NE", margin: 7.5 }, football: { team: "NE", margin: 7.5 }, adjusted: { team: "NE", margin: 7.8 } },
+      { day: "SUNDAY, OCTOBER 18", kickoff: "1:00 PM ET", away: "PIT", home: "TB", market: { team: "PIT", margin: 2.5 }, football: { team: "TB", margin: 1.9 }, adjusted: { team: "PIT", margin: 2.8 } },
+      { day: "SUNDAY, OCTOBER 18", kickoff: "1:00 PM ET", away: "TEN", home: "IND", market: { team: "IND", margin: 7.0 }, football: { team: "IND", margin: 7.4 }, adjusted: { team: "IND", margin: 7.7 } },
+      { day: "SUNDAY, OCTOBER 18", kickoff: "4:05 PM ET", away: "ARI", home: "LAR", market: { team: "LAR", margin: 12.5 }, football: { team: "LAR", margin: 10.0 }, adjusted: { team: "LAR", margin: 12.8 } },
+      { day: "SUNDAY, OCTOBER 18", kickoff: "4:25 PM ET", away: "BUF", home: "LV", market: { team: "BUF", margin: 5.5 }, football: { team: "BUF", margin: 5.3 }, adjusted: { team: "BUF", margin: 7.3 } },
+      { day: "SUNDAY, OCTOBER 18", kickoff: "4:25 PM ET", away: "LAC", home: "KC", market: { team: "KC", margin: 8.5 }, football: { team: "KC", margin: 12.6 }, adjusted: { team: "KC", margin: 9.5 } },
+      { day: "SUNDAY, OCTOBER 18", kickoff: "8:20 PM ET", away: "DAL", home: "GB", market: { team: "GB", margin: 1.5 }, football: { team: "GB", margin: 1.9 }, adjusted: { team: "GB", margin: 0.0 } },
+      { day: "MONDAY, OCTOBER 19", kickoff: "8:15 PM ET", away: "WAS", home: "SF", market: { team: "SF", margin: 7.5 }, football: { team: "SF", margin: 12.9 }, adjusted: { team: "SF", margin: 8.8 } }
     ];
 
-    const dayOrder = ["THURSDAY, OCTOBER 8", "SUNDAY, OCTOBER 11", "MONDAY, OCTOBER 12"];
+    const dayOrder = ["THURSDAY, OCTOBER 15", "SUNDAY, OCTOBER 18", "MONDAY, OCTOBER 19"];
     const modeLabels = {
       football: { tab: "Football-only predictions", algorithm: "Football-only algorithm", line: "Football-only line" },
       adjusted: { tab: "Market-adjusted predictions", algorithm: "Market-adjusted algorithm", line: "Market-adjusted line" },
