@@ -583,7 +583,8 @@
     function modelPick(item, prediction) {
       const marketValue = homeSpread(item, item.market);
       const modelValue = homeSpread(item, prediction);
-      const homeIsRecommended = modelValue < marketValue;
+      const homeIsRecommended = modelValue < marketValue ||
+        (modelValue === marketValue && prediction.team === item.home);
       return homeIsRecommended
         ? spreadText(item.home, marketValue)
         : spreadText(item.away, -marketValue);
